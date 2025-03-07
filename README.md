@@ -12,6 +12,8 @@ It includes authentication options such as:
 
 - OAuth Authentication (Google, Apple)
 
+<img width="458" alt="image" src="https://github.com/user-attachments/assets/b394f78a-b6bf-4efd-8ef7-95daa59e2156" />
+
 ## Why Do You Need a Backend?
 
 Turnkey requires authentication requests (sign-up/login) to be validated (stamped) using your root user API key-pair. Since this key-pair must remain private, it cannot be used directly in the frontend. Instead, authentication requests must be processed and stamped through a backend server before being forwarded to Turnkey.
