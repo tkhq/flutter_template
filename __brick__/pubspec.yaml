@@ -21,8 +21,7 @@ dependencies:
   turnkey_flutter_passkey_stamper: ^0.1.0
   turnkey_api_key_stamper: ^0.1.0
   turnkey_http: ^0.1.1
-  turnkey_sdk_flutter:
-    path: /Users/amir/tkhq/code/dart-sdk/packages/sdk-flutter # TODO: CHANGE THIS TO REAL PACKAGE
+  turnkey_sdk_flutter: ^0.1.0
   provider: ^6.1.2
   flutter_dotenv: ^5.2.1
   crypto: ^3.0.6
