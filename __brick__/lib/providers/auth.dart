@@ -65,16 +65,16 @@ class AuthRelayerProvider with ChangeNotifier {
   {{/include_backend}}
 
   Future<void> initOtpLogin(BuildContext context,
-      {required String otpType, required String contact}) async {
+      {required OtpType otpType, required String contact}) async {
     setLoading(
-        otpType == 'OTP_TYPE_EMAIL' ? 'initEmailLogin' : 'initPhoneLogin',
+        otpType == OtpType.Email ? 'initEmailLogin' : 'initPhoneLogin',
         true);
     setError(null);
 
     try {
       {{#include_backend}}
       final response = await jsonBackendRequest('initOTPAuth', {
-        'otpType': otpType,
+        'otpType': otpType.value,
         'contact': contact,
       });
       {{/include_backend}}
@@ -89,7 +89,6 @@ class AuthRelayerProvider with ChangeNotifier {
           context,
           MaterialPageRoute(
             builder: (context) => OTPScreen(
-              otpType: otpType,
               otpId: response['otpId'],
               organizationId: response['organizationId'],
             ),
@@ -100,13 +99,12 @@ class AuthRelayerProvider with ChangeNotifier {
       setError(error.toString());
     } finally {
       setLoading(
-          otpType == 'OTP_TYPE_EMAIL' ? 'initEmailLogin' : 'initPhoneLogin',
+          otpType == OtpType.Email ? 'initEmailLogin' : 'initPhoneLogin',
           false);
     }
   }
 
   Future<void> completeOtpAuth({
-    required BuildContext context,
     required String otpId,
     required String otpCode,
     required String organizationId,
@@ -146,7 +144,8 @@ class AuthRelayerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signUpWithPasskey(BuildContext context) async {
+  Future<void> signUpWithPasskey() async {
+    // Sign up with Passkey will create a new sub-org, device passkey and read-write session for the user. This function ultimately requires two 'passkey taps' from the user
     setLoading('signUpWithPasskey', true);
     setError(null);
 
@@ -157,9 +156,9 @@ class AuthRelayerProvider with ChangeNotifier {
         'name': 'Flutter test app',
       }, user: {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
-        'name': "Anonymous User",
-        'displayName': "Anonymous User",
-      }, authenticatorName: 'End-User Passkey'));
+        'name': 'Anonymous User',
+        'displayName': 'Anonymous User',
+      }, authenticatorName: 'End-User Passkey')); // Creating a passkey initiates one 'passkey tap'
 
       {{#include_backend}}
       final response = await jsonBackendRequest('createSubOrg', {
@@ -185,6 +184,7 @@ class AuthRelayerProvider with ChangeNotifier {
         final targetPublicKey = await turnkeyProvider.createEmbeddedKey();
 
         final sessionResponse = await httpClient.createReadWriteSession(
+            // Creating a read-write session initiates a 'passkey tap' to stamp the request to Turnkey
             input: CreateReadWriteSessionRequest(
                 type: CreateReadWriteSessionRequestType
                     .activityTypeCreateReadWriteSessionV2,
@@ -207,7 +207,8 @@ class AuthRelayerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> loginWithPasskey(BuildContext context) async {
+  Future<void> loginWithPasskey() async {
+    // Login with Passkey will create a new read-write session for the user using an existing passkey. This function ultimately requires one 'passkey tap' from the user
     setLoading('loginWithPasskey', true);
     setError(null);
 
@@ -221,6 +222,7 @@ class AuthRelayerProvider with ChangeNotifier {
       final targetPublicKey = await turnkeyProvider.createEmbeddedKey();
 
       final sessionResponse = await httpClient.createReadWriteSession(
+          // Creating a read-write session initiates a 'passkey tap' to stamp the request to Turnkey
           input: CreateReadWriteSessionRequest(
               type: CreateReadWriteSessionRequestType
                   .activityTypeCreateReadWriteSessionV2,
@@ -242,7 +244,7 @@ class AuthRelayerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signInWithGoogle(BuildContext context) async {
+  Future<void> signInWithGoogle() async {
     // Sign in with Google is a demonstration of how to use the OpenID Connect with Turnkey using a generic OpenID Connect client library. This function can be refactored to allow oAuth with most OpenID Connect providers.
     setLoading('signInWithGoogle', true);
     final appLinks = AppLinks();
@@ -266,8 +268,8 @@ class AuthRelayerProvider with ChangeNotifier {
           scopes: scopes,
           urlLancher: urlLauncher,
           additionalParameters: {
-            "code_challenge_method": "S256",
-            "nonce": sha256.convert(utf8.encode(targetPublicKey)).toString()
+            'code_challenge_method': 'S256',
+            'nonce': sha256.convert(utf8.encode(targetPublicKey)).toString()
           });
 
       authenticator.flow.redirectUri =
@@ -297,10 +299,10 @@ class AuthRelayerProvider with ChangeNotifier {
             {{#include_backend}}
             // Use the ID token to authenticate with Turnkey
             final response = await jsonBackendRequest('oAuthLogin', {
-              "email": userEmail,
-              "oidcToken": idToken,
-              "providerName": "Google",
-              "targetPublicKey": targetPublicKey,
+              'email': userEmail,
+              'oidcToken': idToken,
+              'providerName': 'Google',
+              'targetPublicKey': targetPublicKey,
               'expirationSeconds':
                   OTP_AUTH_DEFAULT_EXPIRATION_SECONDS.toString(),
             });
@@ -332,7 +334,7 @@ class AuthRelayerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signInWithApple(BuildContext context) async {
+  Future<void> signInWithApple() async {
     // Sign in with Apple leverages the sign_in_with_apple flutter package which uses Apple's native "Sign in with Apple" SDK on iOS.
     setLoading('signInWithApple', true);
 
@@ -351,9 +353,9 @@ class AuthRelayerProvider with ChangeNotifier {
 
       {{#include_backend}}
       final response = await jsonBackendRequest('oAuthLogin', {
-        "oidcToken": oidcToken,
-        "providerName": "Apple",
-        "targetPublicKey": targetPublicKey,
+        'oidcToken': oidcToken,
+        'providerName': 'Apple',
+        'targetPublicKey': targetPublicKey,
         'expirationSeconds': OTP_AUTH_DEFAULT_EXPIRATION_SECONDS.toString(),
       });
       {{/include_backend}}

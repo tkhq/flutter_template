@@ -7,15 +7,14 @@ import '../widgets/buttons.dart';
 import '../providers/auth.dart';
 
 class OTPScreen extends StatelessWidget {
-  final String otpType;
   final String otpId;
   final String organizationId;
 
-  const OTPScreen(
-      {super.key,
-      required this.otpId,
-      required this.organizationId,
-      required this.otpType});
+  const OTPScreen({
+    super.key,
+    required this.otpId,
+    required this.organizationId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +98,6 @@ class OTPScreen extends StatelessWidget {
                               final otpCode = otpController.text;
                               if (otpCode.isNotEmpty) {
                                 await authRelayerProvider.completeOtpAuth(
-                                  context: context,
                                   otpId: otpId,
                                   otpCode: otpCode,
                                   organizationId: organizationId,
