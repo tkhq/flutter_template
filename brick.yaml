@@ -1,0 +1,24 @@
+name: turnkey_flutter_template
+description: A template for creating a new Turnkey Flutter project
+version: 0.1.0+1
+vars:
+  name:
+    type: string
+    description: The app name
+    default: myturnkeyapp
+    prompt: Please enter your app name.
+  google_redirect_scheme:
+    type: string
+    description: The scheme for the Google redirect URI
+    default: com.googleusercontent.apps.1234567890-abcdef
+    prompt: "(Google OAuth Setup): Please enter your Google redirect scheme."
+  rp_id:
+    type: string
+    description: The Relying Party ID for Passkeys
+    default: example.com
+    prompt: "(Passkey Setup): Please enter your Relying Party ID."
+  include_backend:
+    type: boolean
+    description: Whether to include the backend
+    default: true
+    prompt: "Would you like to include an example Typescript backend in ./api-server?"
